@@ -2,9 +2,9 @@
 % Please edit documentation in R/frsim_deSolve.R
 \name{frsim_deSolve}
 \alias{frsim_deSolve}
-\title{The Functional Response Model for `deSolve`}
+\title{Calculation of the Functional Response Model using odeintr deSolve}
 \usage{
-frsim_deSolve(Nstart, parms, tmax, tsteps = 100)
+frsim_deSolve(Nstart, parms, tmax, steps = 100)
 }
 \arguments{
 \item{Nstart}{The initial prey/resource density.}
@@ -13,7 +13,7 @@ frsim_deSolve(Nstart, parms, tmax, tsteps = 100)
 
 \item{tmax}{The time over which should be simulated.}
 
-\item{tsteps}{The number of times steps that \link[deSolve]{lsoda} should
+\item{steps}{The number of times steps that \link[deSolve]{lsoda} should
 return.}
 }
 \value{
