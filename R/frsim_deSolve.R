@@ -1,11 +1,11 @@
-#' The Functional Response Model for `deSolve`
+#' Calculation of the Functional Response Model using odeintr deSolve
 #'
 #' @description
 #'
 #' @param Nstart The initial prey/resource density.
 #' @param parms The model parameters as needed by e.g. \link[deSolve]{lsoda}.
 #' @param tmax The time over which should be simulated.
-#' @param tsteps The number of times steps that \link[deSolve]{lsoda} should
+#' @param steps The number of times steps that \link[deSolve]{lsoda} should
 #'     return.
 #'
 #' @details The model parameters included in `parms` are (1) the maximum feeding
@@ -48,12 +48,12 @@
 #' )
 #'
 
-frsim_deSolve = function(Nstart, parms, tmax, tsteps = 100){
+frsim_deSolve = function(Nstart, parms, tmax, steps = 100){
   if(length(tmax) == 1){
     Nstart2 <- unique(Nstart)
     reps <- 1:length(Nstart)
     reps2 <- 1:length(Nstart2)
-    times <- seq(0, tmax, length=tsteps)
+    times <- seq(0, tmax, length=steps)
 
     Nend2 <- foreach::foreach(i = reps2,
                               .combine = "c") %do% {
@@ -61,7 +61,7 @@ frsim_deSolve = function(Nstart, parms, tmax, tsteps = 100){
                                                times = times,
                                                func = frmodel_deSolve,
                                                parms = parms
-                                )[[tsteps,2]]
+                                )[[steps,2]]
                               }
 
     Neaten <- foreach::foreach(i = reps,
@@ -77,12 +77,12 @@ frsim_deSolve = function(Nstart, parms, tmax, tsteps = 100){
     reps <- 1:length(Nstart)
     Nend <- foreach::foreach(i = reps,
                              .combine = "c") %do% {
-                               times <- seq(0, tmax[i], length=tsteps)
+                               times <- seq(0, tmax[i], length=steps)
                                deSolve::lsoda(y = Nstart[i],
                                               times = times,
                                               func = frmodel_deSolve,
                                               parms = parms
-                               )[[tsteps,2]]
+                               )[[steps,2]]
                              }
 
     Neaten <- Nstart-Nend
