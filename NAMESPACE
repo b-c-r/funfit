@@ -2,6 +2,7 @@
 
 export(frfit_deSolve)
 export(frmodel_deSolve)
+export(frmodel_odeintr)
 export(frnll_deSolve)
 export(frsim_deSolve)
 import(BH)
