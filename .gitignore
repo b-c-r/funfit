@@ -39,8 +39,4 @@ vignettes/*.pdf
 .Renviron
 
 # Folders
-/RAWDATA/
 /TESTCODE/
-
-# Raw Data
-*.csv

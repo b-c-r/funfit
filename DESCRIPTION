@@ -12,6 +12,10 @@ Encoding: UTF-8
 Imports:
     foreach,
     deSolve,
-    bbmle
+    bbmle,
+    Rcpp,
+    BH,
+    odeintr
+LinkingTo: Rcpp, BH, odeintr
 LazyData: true
 RoxygenNote: 7.1.2

@@ -1,4 +1,6 @@
 ^.*\.Rproj$
 ^\.Rproj\.user$
-\RAWDATA
-\TESTCODE
+^TESTCODE$
+^data_raw$
+^Rdev$
+^srcdev$
