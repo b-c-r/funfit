@@ -1,6 +1,6 @@
 
 ## The Functional Response model code written in cpp as simple string:
-FR <- 'dxdt[0] = -Fmax * pow(x[0],1+q) / (N0 + pow(x[0],1+q)) * P;'
+FR <- 'dxdt[0] = -Fmax * pow(x[0],1+q) / (pow(N0,1+q) + pow(x[0],1+q)) * P;'
 
 ## Automatic creation of the cpp source code using odeintr:
 fr_code <- odeintr::compile_sys("FR", FR,

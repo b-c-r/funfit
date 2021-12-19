@@ -35,7 +35,7 @@ namespace odeintr
   static void
   sys(const state_type x, state_type &dxdt, const double t)
   {
-    dxdt[0] = -Fmax * pow(x[0],1+q) / (N0 + pow(x[0],1+q)) * P;;
+    dxdt[0] = -Fmax * pow(x[0],1+q) / (pow(N0,1+q) + pow(x[0],1+q)) * P;;
   }
 
   static void
