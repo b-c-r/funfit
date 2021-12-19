@@ -33,13 +33,13 @@ The model parameters included in `parms` are (1) the maximum feeding
 }
 \examples{
 
-data(vucic_pestic_fr)
+data(dfr_vp)
 
 frfit_deSolve(
-  Neaten = vucic_pestic_fr$Neaten,
-  Nstart = vucic_pestic_fr$N0,
+  Neaten = dfr_vp$Neaten,
+  Nstart = dfr_vp$Nstart,
   P = 1,
-  tmax = 24
+  tmax = 1
 )
 
 }
