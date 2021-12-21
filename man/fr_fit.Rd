@@ -4,7 +4,20 @@
 \alias{fr_fit}
 \title{Fitting of the functional response model with simulation by lsoda()}
 \usage{
-fr_fit(Nstart, Neaten, P, tend, tsteps = 100)
+fr_fit(
+  Nstart,
+  Neaten,
+  P,
+  tend,
+  tsteps = 100,
+  lhs_iter_init = 1000,
+  lhs_iter_val = 50,
+  MC = T,
+  noC = ceiling(parallel::detectCores()/2),
+  range_mult = c(1.01, 1.1, 1.5, 2, 5),
+  witer_max = 25,
+  val_tol = 4
+)
 }
 \arguments{
 \item{Nstart}{The initial prey/resource density.}
@@ -17,7 +30,13 @@ trial.}
 \item{tsteps}{The number of times steps that \link[deSolve]{lsoda} should
 return.}
 
+\item{MC}{Should the code run in parallel? Default is TRUE.}
+
+\item{noC}{The number of cores that should be used, default is 50% of all cores.}
+
 \item{parms}{The model parameters as needed by e.g. \link[deSolve]{lsoda}.}
+
+\item{lhs_iter}{Number of random latin hypercube samplings, default is 1000.}
 }
 \value{
 Returns a vector of negative log-likelihoods in the order of
@@ -32,7 +51,6 @@ The model parameters included in `parms` are (1) the maximum feeding
     and the number or density of the predators/consumers, `P`.
 }
 \examples{
-
 data(dfr_vp)
 
 fr_fit(

@@ -43,7 +43,7 @@ fr_nll <- function(Neaten, Nstart, P, tend, Fmax, N0, q, tsteps = 100){
 
   if(Fmax <= 0) return(Inf)
   if(N0 <= 0) return(Inf)
-  if(q <= -1) return(Inf)
+  if(q < 0) return(Inf)
 
   y <- fr_sim(Nstart = Nstart,
               P = P,
