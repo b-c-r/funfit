@@ -16,6 +16,7 @@ fr_fit(
   noC = ceiling(parallel::detectCores()/2),
   range_mult = c(1.01, 1.1, 1.5, 2, 5),
   witer_max = 25,
+  mle2_tol = 1e-10,
   val_tol = 4
 )
 }

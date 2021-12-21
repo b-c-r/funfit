@@ -41,13 +41,14 @@ fr_fit <- function(
   P,
   tend,
   tsteps = 100,
-  lhs_iter_init = 1000,
-  lhs_iter_val = 50,
+  lhs_iter_init = 1280,
+  lhs_iter_val = 160,
   MC = T,
   noC = ceiling(parallel::detectCores()/2),
-  range_mult = c(1.01, 1.1, 1.5, 2, 5),
+  range_mult = c(1.001, 1.1, 2, 5),
   witer_max = 25,
-  val_tol = 4
+  mle2_tol = 1e-12,
+  val_tol = 6
 ){
 
   Fmax_range <- c(min(Neaten[Nstart>(max(Nstart)/2)]), max(Neaten)*2) / mean(tend)
@@ -83,25 +84,30 @@ fr_fit <- function(
       N0 = start_parms$N0,
       q = start_parms$q
     ),
+    fixed = list(
+      tsteps = tsteps
+    ),
     data = list(
       Nstart = Nstart,
       Neaten = Neaten,
       tend = tend,
       P = P
-    )
+    ),
+    control = list(reltol = mle2_tol)
   )
   nll_fits[1] <- round(bbmle::logLik(fit[[1]])[][1], val_tol)
-  message("parameter values after 1st fit:")
+  message(paste("parameter values after fit 1:", sep = ""))
   message(paste("Fmax: ", round(bbmle::coef(fit[[1]])[1],3)))
   message(paste("N0: ", round(bbmle::coef(fit[[1]])[2],3)))
   message(paste("q: ", round(bbmle::coef(fit[[1]])[3],3)))
   message(paste("nll: ", nll_fits[1]))
   message("#########################################")
+  message("")
   message("start validating the result")
+  message("")
 
   witer <- 2
-  suc <- F
-  while(suc == T | witer <= witer_max){
+  while(witer <= witer_max){
 
     start_parms <- foreach::foreach(i = 1:length(range_mult),
                                     .combine = "rbind") %do% {
@@ -135,23 +141,28 @@ fr_fit <- function(
         N0 = start_parms$N0[start_parms$nll == min(start_parms$nll)],
         q = start_parms$q[start_parms$nll == min(start_parms$nll)]
       ),
+      fixed = list(
+        tsteps = tsteps
+      ),
       data = list(
         Nstart = Nstart,
         Neaten = Neaten,
         tend = tend,
         P = P
-      )
+      ),
+      control = list(reltol = mle2_tol)
     )
     nll_fits[witer] <- round(bbmle::logLik(fit[[witer]])[][1], val_tol)
-    message(paste("parameter values after ", witer," fit:", sep = ""))
+    message(paste("parameter values after fit ", witer, ":", sep = ""))
     message(paste("Fmax: ", round(bbmle::coef(fit[[witer]])[1],3)))
     message(paste("N0: ", round(bbmle::coef(fit[[witer]])[2],3)))
     message(paste("q: ", round(bbmle::coef(fit[[witer]])[3],3)))
     message(paste("nll: ", nll_fits[witer]))
     message("#########################################")
+    message("")
 
-    if(witer >=5){
-      if(length(unique(nll_fits[(witer-4):witer])) == 1) suc <- T
+    if(witer >= 3){
+      if(length(unique(nll_fits[(witer-2):witer])) == 1) break
     }
     witer <- witer+1
 
