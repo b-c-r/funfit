@@ -28,14 +28,14 @@ namespace odeintr
   static std::vector<vec_type> rec_x(N);
   static vec_type rec_t;
   
-  double Fmax, N0, q, P;;
+  double Fmax, N0, h, P;;
   
   #include "utils.h"
   
   static void
   sys(const state_type x, state_type &dxdt, const double t)
   {
-    dxdt[0] = -Fmax * pow(x[0],1+q) / (pow(N0,1+q) + pow(x[0],1+q)) * P;;
+    dxdt[0] = -Fmax * pow(x[0],h) / (pow(N0,h) + pow(x[0],h)) * P;;
   }
 
   static void
@@ -166,11 +166,11 @@ FR_no_record(Rcpp::NumericVector init,
 }
 
 // [[Rcpp::export]]
-void FR_set_params(double Fmax, double N0, double q, double P)
+void FR_set_params(double Fmax, double N0, double h, double P)
 { 
   odeintr::Fmax = Fmax;
 odeintr::N0 = N0;
-odeintr::q = q;
+odeintr::h = h;
 odeintr::P = P;
 }
 // [[Rcpp::export]]
@@ -179,7 +179,7 @@ Rcpp::List FR_get_params()
   Rcpp::List out;
   out["Fmax"] = odeintr::Fmax;
 out["N0"] = odeintr::N0;
-out["q"] = odeintr::q;
+out["h"] = odeintr::h;
 out["P"] = odeintr::P;
   return out;
 }

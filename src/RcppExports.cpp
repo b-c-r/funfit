@@ -118,15 +118,15 @@ BEGIN_RCPP
 END_RCPP
 }
 // FR_set_params
-void FR_set_params(double Fmax, double N0, double q, double P);
-RcppExport SEXP _funfit_FR_set_params(SEXP FmaxSEXP, SEXP N0SEXP, SEXP qSEXP, SEXP PSEXP) {
+void FR_set_params(double Fmax, double N0, double h, double P);
+RcppExport SEXP _funfit_FR_set_params(SEXP FmaxSEXP, SEXP N0SEXP, SEXP hSEXP, SEXP PSEXP) {
 BEGIN_RCPP
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< double >::type Fmax(FmaxSEXP);
     Rcpp::traits::input_parameter< double >::type N0(N0SEXP);
-    Rcpp::traits::input_parameter< double >::type q(qSEXP);
+    Rcpp::traits::input_parameter< double >::type h(hSEXP);
     Rcpp::traits::input_parameter< double >::type P(PSEXP);
-    FR_set_params(Fmax, N0, q, P);
+    FR_set_params(Fmax, N0, h, P);
     return R_NilValue;
 END_RCPP
 }

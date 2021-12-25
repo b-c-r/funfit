@@ -37,8 +37,8 @@ FR_no_record <- function(init, duration, step_size = 1.0, start = 0.0) {
     .Call('_funfit_FR_no_record', PACKAGE = 'funfit', init, duration, step_size, start)
 }
 
-FR_set_params <- function(Fmax, N0, q, P) {
-    invisible(.Call('_funfit_FR_set_params', PACKAGE = 'funfit', Fmax, N0, q, P))
+FR_set_params <- function(Fmax, N0, h, P) {
+    invisible(.Call('_funfit_FR_set_params', PACKAGE = 'funfit', Fmax, N0, h, P))
 }
 
 FR_get_params <- function() {
