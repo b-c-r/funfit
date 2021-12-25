@@ -4,7 +4,7 @@
 \alias{fr_sim}
 \title{Calculation of the Functional Response Model using odeintr}
 \usage{
-fr_sim(Nstart, P, tend, Fmax, N0, q, tsteps = 100)
+fr_sim(Nstart, P, tend, Fmax, N0, h, tsteps = 50)
 }
 \arguments{
 \item{Nstart}{The initial prey/resource density.}
@@ -19,7 +19,7 @@ Must be a vector of the length of Nstart.}
 
 \item{N0}{The half saturation density.}
 
-\item{q}{The functional response shape parameter.}
+\item{h}{The Hill exponent. It is functional response shape parameter.}
 
 \item{tsteps}{The number of steps that should be returned by the solver.}
 }
@@ -40,7 +40,7 @@ y1 <- fr_sim(
   tend = rep(24, length(Nstart)),
   Fmax = 2,
   N0 = 25,
-  q = .5
+  h = 1
 )
 
 plot(Nstart, y1, type="l")

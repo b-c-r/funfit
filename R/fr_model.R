@@ -5,9 +5,10 @@
 #' @param Nstart The initial prey/resource density.
 #' @param Fmax The maximum feeding rate.
 #' @param N0 The half saturation density.
-#' @param q The functional response shape parameter.
+#' @param h The Hill exponent. It is functional response shape parameter.
 #' @param P The consumer/predator abundance/counts/density.
 #' @param tend The end time over up to which should be simulated (e.g. 24h).
+#'     Must be a vector of the length of Nstart.
 #' @param tsteps The number of steps that should be returned by the solver.
 #'
 #' @return Returns the prey/resource density at Tend.
@@ -20,17 +21,17 @@
 #'   Nstart = 25,
 #'   Fmax = 2,
 #'   N0 = 5,
-#'   q = 1,
+#'   h = 1,
 #'   P = 1,
 #'   tend = 24,
 #'   tsteps = 100
 #'  )
 #'
 
-fr_model <- function(Nstart, P, tend, Fmax, N0, q, tsteps){
+fr_model <- function(Nstart, P, tend, Fmax, N0, h, tsteps){
   FR_set_params(Fmax = Fmax,
                 N0 = N0,
-                q = q,
+                h = h,
                 P = P)
   FR(init = Nstart,
      duration = tend,

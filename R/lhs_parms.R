@@ -1,21 +1,23 @@
-#' Random sampling of Parameters and Selection based on lhs
+#' Random Sampling of Parameters and Selection based on lhs
 #'
 #' @description TBA
 #'
+#' @param Nstart The initial prey/resource density.
 #' @param Neaten The prey/resource items eaten throughout the experimental
 #'     trial.
-#' @param Nstart The initial prey/resource density.
-#' @param P TBA
-#' @param tend The time over which should be simulated.
-#' @param Fmax TBA
-#' @param N0 TBA
-#' @param q TBA
-#' @param tsteps The number of times steps that \link[deSolve]{lsoda} should
-#'     return.
-#' @param lhs_iter Number of random latin hypercube samplings, default is 1000.
-#' @param MC Should the code run in parallel? Default is TRUE.
-#' @param noC The number of cores that should be used, default is 50% of all cores.
-#'
+#' @param P The consumer/predator abundance/counts/density.
+#'     Must be a vector of the length of Nstart.
+#' @param tend The end time over up to which should be simulated (e.g. 24h).
+#'     Must be a vector of the length of Nstart.
+#' @param tsteps The number of steps that should be returned by the solver.
+#' @param l10_Fmax The log10 of the maximum feeding rate.
+#' @param l10_N0 The log10 of the half saturation density.
+#' @param h The Hill exponent. It is functional response shape parameter.
+#' @param tsteps The number of steps that should be returned by the solver.
+#' @param lhs_iter Number of random latin hypercube samplings.
+#' @param MC Use parallel computing? (F/T)
+#' @param noC If MC = T, how many cores to use?
+
 #' @return Returns a data frame with parameter values.
 #'
 #' @import foreach
@@ -31,20 +33,20 @@ lhs_parms <- function(
   Nstart,
   P,
   tend,
-  Fmax_range,
-  N0_range,
-  q_range,
+  l10_Fmax_range,
+  l10_N0_range,
+  h_range,
   tsteps = 100,
   lhs_iter = 1000,
   MC = T,
-  noC = ceiling(parallel::detectCores())
+  noC = ceiling(parallel::detectCores()/2)
 ){
   ## guessing parameter ranges:
   lhsvals <- lhs::randomLHS(lhs_iter, 3)
 
-  Fmax_range <- (lhsvals[,1] * (Fmax_range[2]-Fmax_range[1])) + Fmax_range[1]
-  N0_range <- (lhsvals[,2] * (N0_range[2]-N0_range[1])) + N0_range[1]
-  q_range <- (lhsvals[,3] * (q_range[2]-q_range[1])) + q_range[1]
+  l10_Fmax_range <- (lhsvals[,1] * (l10_Fmax_range[2]-l10_Fmax_range[1])) + l10_Fmax_range[1]
+  l10_N0_range <- (lhsvals[,2] * (l10_N0_range[2]-l10_N0_range[1])) + l10_N0_range[1]
+  h_range <- (lhsvals[,3] * (h_range[2]-h_range[1])) + h_range[1]
 
   ## calculate nlls
   if(MC == T){
@@ -60,9 +62,9 @@ lhs_parms <- function(
         Nstart = Nstart,
         P = P,
         tend = tend,
-        Fmax = Fmax_range[i],
-        N0 = N0_range[i],
-        q = q_range[i]
+        l10_Fmax = l10_Fmax_range[i],
+        l10_N0 = l10_N0_range[i],
+        h = h_range[i]
       )
     }
     parallel::stopCluster(cl)
@@ -75,17 +77,17 @@ lhs_parms <- function(
         Nstart = Nstart,
         P = P,
         tend = tend,
-        Fmax = Fmax_range[i],
-        N0 = N0_range[i],
-        q = q_range[i]
+        l10_Fmax = l10_Fmax_range[i],
+        l10_N0 = l10_N0_range[i],
+        h = h_range[i]
       )
     }
   }
 
   sel_parms <- data.frame(
-    Fmax = Fmax_range[nlls == min(nlls)],
-    N0 = N0_range[nlls == min(nlls)],
-    q = q_range[nlls == min(nlls)],
+    l10_Fmax = l10_Fmax_range[nlls == min(nlls)],
+    l10_N0 = l10_N0_range[nlls == min(nlls)],
+    h = h_range[nlls == min(nlls)],
     nll = nlls[nlls == min(nlls)]
   )
 

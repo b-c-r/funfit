@@ -9,15 +9,15 @@ fr_fit(
   Neaten,
   P,
   tend,
-  tsteps = 100,
-  lhs_iter_init = 1000,
-  lhs_iter_val = 50,
+  tsteps = 50,
+  lhs_iter_init = 1280,
+  lhs_iter_val = 320,
   MC = T,
   noC = ceiling(parallel::detectCores()/2),
-  range_mult = c(1.01, 1.1, 1.5, 2, 5),
+  range_mult = c(1.001, 1.1, 2, 5),
   witer_max = 25,
-  mle2_tol = 1e-10,
-  val_tol = 4
+  mle2_tol = 1e-12,
+  val_tol = 6
 )
 }
 \arguments{
@@ -26,32 +26,42 @@ fr_fit(
 \item{Neaten}{The prey/resource items eaten throughout the experimental
 trial.}
 
-\item{tend}{The time over which should be simulated.}
+\item{P}{The consumer/predator abundance/counts/density.
+Must be a vector of the length of Nstart.}
 
-\item{tsteps}{The number of times steps that \link[deSolve]{lsoda} should
-return.}
+\item{tend}{The end time over up to which should be simulated (e.g. 24h).
+Must be a vector of the length of Nstart.}
 
-\item{MC}{Should the code run in parallel? Default is TRUE.}
+\item{tsteps}{The number of steps that should be returned by the solver.}
 
-\item{noC}{The number of cores that should be used, default is 50% of all cores.}
+\item{lhs_iter_init}{Number of initial random latin hypercube samplings.}
 
-\item{parms}{The model parameters as needed by e.g. \link[deSolve]{lsoda}.}
+\item{lhs_iter_val}{Number of validation random latin hypercube samplings.}
 
-\item{lhs_iter}{Number of random latin hypercube samplings, default is 1000.}
+\item{MC}{Use parallel computing? (F/T)}
+
+\item{noC}{If MC = T, how many cores to use?}
+
+\item{range_mult}{The multipliers with which the current best parameters
+should be multiplied for the validation random latin hypercube sampling.}
+
+\item{witer_max}{How many fits should be performed without convergence?}
+
+\item{mle2_tol}{The tolerance of a single mle2 fit.}
+
+\item{val_tol}{The tolerance of the validation.}
 }
 \value{
-Returns a vector of negative log-likelihoods in the order of
-    Neaten/Nstart.
+TBA
 }
 \description{
 
 }
 \details{
-The model parameters included in `parms` are (1) the maximum feeding
-    rate `Fmax`, the half saturation density, `N0`, the shape parameter `q`,
-    and the number or density of the predators/consumers, `P`.
+TBA
 }
 \examples{
+
 data(dfr_vp)
 
 fr_fit(

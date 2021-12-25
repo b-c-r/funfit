@@ -2,20 +2,20 @@
 % Please edit documentation in R/lhs_parms.R
 \name{lhs_parms}
 \alias{lhs_parms}
-\title{Random sampling of Parameters and Selection based on lhs}
+\title{Random Sampling of Parameters and Selection based on lhs}
 \usage{
 lhs_parms(
   Neaten,
   Nstart,
   P,
   tend,
-  Fmax_range,
-  N0_range,
-  q_range,
+  l10_Fmax_range,
+  l10_N0_range,
+  h_range,
   tsteps = 100,
   lhs_iter = 1000,
   MC = T,
-  noC = ceiling(parallel::detectCores())
+  noC = ceiling(parallel::detectCores()/2)
 )
 }
 \arguments{
@@ -24,24 +24,25 @@ trial.}
 
 \item{Nstart}{The initial prey/resource density.}
 
-\item{P}{TBA}
+\item{P}{The consumer/predator abundance/counts/density.
+Must be a vector of the length of Nstart.}
 
-\item{tend}{The time over which should be simulated.}
+\item{tend}{The end time over up to which should be simulated (e.g. 24h).
+Must be a vector of the length of Nstart.}
 
-\item{tsteps}{The number of times steps that \link[deSolve]{lsoda} should
-return.}
+\item{tsteps}{The number of steps that should be returned by the solver.}
 
-\item{lhs_iter}{Number of random latin hypercube samplings, default is 1000.}
+\item{lhs_iter}{Number of random latin hypercube samplings.}
 
-\item{MC}{Should the code run in parallel? Default is TRUE.}
+\item{MC}{Use parallel computing? (F/T)}
 
-\item{noC}{The number of cores that should be used, default is 50% of all cores.}
+\item{noC}{If MC = T, how many cores to use?}
 
-\item{Fmax}{TBA}
+\item{l10_Fmax}{The log10 of the maximum feeding rate.}
 
-\item{N0}{TBA}
+\item{l10_N0}{The log10 of the half saturation density.}
 
-\item{q}{TBA}
+\item{h}{The Hill exponent. It is functional response shape parameter.}
 }
 \value{
 Returns a data frame with parameter values.

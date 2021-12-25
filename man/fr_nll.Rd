@@ -4,7 +4,7 @@
 \alias{fr_nll}
 \title{Calculation of negative log-likelihoods using lsoda() as method}
 \usage{
-fr_nll(Neaten, Nstart, P, tend, Fmax, N0, q, tsteps = 100)
+fr_nll(Neaten, Nstart, P, tend, l10_Fmax, l10_N0, h, tsteps = 50)
 }
 \arguments{
 \item{Neaten}{The prey/resource items eaten throughout the experimental
@@ -12,42 +12,29 @@ trial.}
 
 \item{Nstart}{The initial prey/resource density.}
 
-\item{tend}{The time over which should be simulated.}
+\item{P}{The consumer/predator abundance/counts/density.
+Must be a vector of the length of Nstart.}
 
-\item{tsteps}{The number of times steps that \link[deSolve]{lsoda} should
-return.}
+\item{tend}{The end time over up to which should be simulated (e.g. 24h).
+Must be a vector of the length of Nstart.}
 
-\item{parms}{The model parameters as needed by e.g. \link[deSolve]{lsoda}.}
+\item{l10_Fmax}{The log10 of the maximum feeding rate.}
+
+\item{l10_N0}{The log10 of the half saturation density.}
+
+\item{h}{The Hill exponent. It is functional response shape parameter.}
+
+\item{tsteps}{The number of steps that should be returned by the solver.}
 }
 \value{
-Returns a vector of negative log-likelihoods in the order of
-    Neaten/Nstart.
+Returns a single negative log-likelihood value.
 }
 \description{
 
 }
-\details{
-The model parameters included in `parms` are (1) the maximum feeding
-    rate `Fmax`, the half saturation density, `N0`, the shape parameter `q`,
-    and the number or density of the predators/consumers, `P`.
-}
 \examples{
 
-Nstart <- rep(1:100,10)
-Neaten <- rbinom(length(Nstart),
-                 size = Nstart,
-                 prob = .5
-                 )
-
-fr_nll(
-  Neaten = Neaten,
-  Nstart = Nstart,
-  P = rep(1, length(Nstart)),
-  tend = rep(24, length(Nstart)),
-  Fmax = 2,
-  N0 = 5,
-  q = 1
-)
+TBA
 
 
 }

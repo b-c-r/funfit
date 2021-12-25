@@ -4,20 +4,21 @@
 \alias{fr_model}
 \title{The Functional Response Model}
 \usage{
-fr_model(Nstart, P, tend, Fmax, N0, q, tsteps)
+fr_model(Nstart, P, tend, Fmax, N0, h, tsteps)
 }
 \arguments{
 \item{Nstart}{The initial prey/resource density.}
 
 \item{P}{The consumer/predator abundance/counts/density.}
 
-\item{tend}{The end time over up to which should be simulated (e.g. 24h).}
+\item{tend}{The end time over up to which should be simulated (e.g. 24h).
+Must be a vector of the length of Nstart.}
 
 \item{Fmax}{The maximum feeding rate.}
 
 \item{N0}{The half saturation density.}
 
-\item{q}{The functional response shape parameter.}
+\item{h}{The Hill exponent. It is functional response shape parameter.}
 
 \item{tsteps}{The number of steps that should be returned by the solver.}
 }
@@ -33,7 +34,7 @@ fr_model(
   Nstart = 25,
   Fmax = 2,
   N0 = 5,
-  q = 1,
+  h = 1,
   P = 1,
   tend = 24,
   tsteps = 100

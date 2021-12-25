@@ -9,7 +9,7 @@
 #'     Must be a vector of the length of Nstart.
 #' @param Fmax The maximum feeding rate.
 #' @param N0 The half saturation density.
-#' @param q The functional response shape parameter.
+#' @param h The Hill exponent. It is functional response shape parameter.
 #' @param tsteps The number of steps that should be returned by the solver.
 #'
 #' @return Returns a vector with the number of prey/resource eaten in the order
@@ -29,13 +29,13 @@
 #'   tend = rep(24, length(Nstart)),
 #'   Fmax = 2,
 #'   N0 = 25,
-#'   q = .5
+#'   h = 1
 #' )
 #'
 #' plot(Nstart, y1, type="l")
 #'
 
-fr_sim <- function(Nstart, P, tend, Fmax, N0, q, tsteps = 100){
+fr_sim <- function(Nstart, P, tend, Fmax, N0, h, tsteps = 50){
   reps <- 1:length(Nstart)
   Neaten <- foreach::foreach(i = reps, .combine = "c") %do% {
     Nstart[i] - fr_model(
@@ -44,7 +44,7 @@ fr_sim <- function(Nstart, P, tend, Fmax, N0, q, tsteps = 100){
       tend = tend[i],
       Fmax = Fmax,
       N0 = N0,
-      q = q,
+      h = h,
       tsteps = tsteps
     )
   }
