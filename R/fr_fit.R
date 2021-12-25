@@ -2,29 +2,35 @@
 #'
 #' @description
 #'
+#'
+#' @param Nstart The initial prey/resource density.
 #' @param Neaten The prey/resource items eaten throughout the experimental
 #'     trial.
-#' @param Nstart The initial prey/resource density.
-#' @param parms The model parameters as needed by e.g. \link[deSolve]{lsoda}.
-#' @param tend The time over which should be simulated.
-#' @param tsteps The number of times steps that \link[deSolve]{lsoda} should
-#'     return.
-#' @param lhs_iter Number of random latin hypercube samplings, default is 1000.
-#' @param MC Should the code run in parallel? Default is TRUE.
-#' @param noC The number of cores that should be used, default is 50% of all cores.
+#' @param P The consumer/predator abundance/counts/density.
+#'     Must be a vector of the length of Nstart.
+#' @param tend The end time over up to which should be simulated (e.g. 24h).
+#'     Must be a vector of the length of Nstart.
+#' @param tsteps The number of steps that should be returned by the solver.
+#' @param lhs_iter_init Number of initial random latin hypercube samplings.
+#' @param lhs_iter_val Number of validation random latin hypercube samplings.
+#' @param MC Use parallel computing? (F/T)
+#' @param noC If MC = T, how many cores to use?
+#' @param range_mult The multipliers with which the current best parameters
+#'     should be multiplied for the validation random latin hypercube sampling.
+#' @param witer_max How many fits should be performed without convergence?
+#' @param mle2_tol The tolerance of a single mle2 fit.
+#' @param val_tol The tolerance of the validation.
 #'
-#' @details The model parameters included in `parms` are (1) the maximum feeding
-#'     rate `Fmax`, the half saturation density, `N0`, the shape parameter `q`,
-#'     and the number or density of the predators/consumers, `P`.
+#' @details TBA
 #'
-#' @return Returns a vector of negative log-likelihoods in the order of
-#'     Neaten/Nstart.
+#' @return TBA
 #'
 #' @import bbmle
 #'
 #' @export
 #'
 #' @examples
+#'
 #' data(dfr_vp)
 #'
 #' fr_fit(
@@ -40,9 +46,9 @@ fr_fit <- function(
   Neaten,
   P,
   tend,
-  tsteps = 100,
+  tsteps = 50,
   lhs_iter_init = 1280,
-  lhs_iter_val = 160,
+  lhs_iter_val = 320,
   MC = T,
   noC = ceiling(parallel::detectCores()/2),
   range_mult = c(1.001, 1.1, 2, 5),
@@ -53,25 +59,25 @@ fr_fit <- function(
 
   Fmax_range <- c(min(Neaten[Nstart>(max(Nstart)/2)]), max(Neaten)*2) / mean(tend)
   N0_range <- quantile(Nstart,c(.1,.9))
-  q_range <- c(0, 2)
+  h_range <- c(1, 4)
 
   start_parms <- lhs_parms(
     Neaten = Neaten,
     Nstart = Nstart,
     P = P,
     tend = tend,
-    Fmax_range = Fmax_range,
-    N0_range = N0_range,
-    q_range = q_range,
+    l10_Fmax_range = log10(Fmax_range),
+    l10_N0_range = log10(N0_range),
+    h_range = h_range,
     tsteps = tsteps,
     lhs_iter = lhs_iter_init,
     MC = T,
     noC = noC
   )
   message("parameter values after lhs-sampling:")
-  message(paste("Fmax: ", round(start_parms$Fmax,3)))
-  message(paste("N0: ", round(start_parms$N0,3)))
-  message(paste("q: ", round(start_parms$q,3)))
+  message(paste("Fmax: ", round(10^start_parms$l10_Fmax,3)))
+  message(paste("N0: ", round(10^start_parms$l10_N0,3)))
+  message(paste("h: ", round(start_parms$h,3)))
   message("#########################################")
 
   fit <- list()
@@ -80,9 +86,9 @@ fr_fit <- function(
   fit[[1]] <- bbmle::mle2(
     minuslogl = fr_nll,
     start = list(
-      Fmax = start_parms$Fmax,
-      N0 = start_parms$N0,
-      q = start_parms$q
+      l10_Fmax = start_parms$l10_Fmax,
+      l10_N0 = start_parms$l10_N0,
+      h = start_parms$h
     ),
     fixed = list(
       tsteps = tsteps
@@ -97,8 +103,8 @@ fr_fit <- function(
   )
   nll_fits[1] <- round(bbmle::logLik(fit[[1]])[][1], val_tol)
   message(paste("parameter values after fit 1:", sep = ""))
-  message(paste("Fmax: ", round(bbmle::coef(fit[[1]])[1],3)))
-  message(paste("N0: ", round(bbmle::coef(fit[[1]])[2],3)))
+  message(paste("Fmax: ", round(10^bbmle::coef(fit[[1]])[1],3)))
+  message(paste("N0: ", round(10^bbmle::coef(fit[[1]])[2],3)))
   message(paste("q: ", round(bbmle::coef(fit[[1]])[3],3)))
   message(paste("nll: ", nll_fits[1]))
   message("#########################################")
@@ -112,9 +118,9 @@ fr_fit <- function(
     start_parms <- foreach::foreach(i = 1:length(range_mult),
                                     .combine = "rbind") %do% {
 
-      Fmax_range <- c(bbmle::coef(fit[[1]])[1]/range_mult[i],
+      Fmax_range <- c(10^bbmle::coef(fit[[1]])[1]/range_mult[i],
                       bbmle::coef(fit[[1]])[1]*range_mult[i])
-      N0_range <- c(bbmle::coef(fit[[1]])[2]/range_mult[i],
+      N0_range <- c(10^bbmle::coef(fit[[1]])[2]/range_mult[i],
                       bbmle::coef(fit[[1]])[2]*range_mult[i])
       q_range <- c(bbmle::coef(fit[[1]])[3]/range_mult[i],
                       bbmle::coef(fit[[1]])[3]*range_mult[i])
@@ -124,9 +130,9 @@ fr_fit <- function(
         Nstart = Nstart,
         P = P,
         tend = tend,
-        Fmax_range = Fmax_range,
-        N0_range = N0_range,
-        q_range = q_range,
+        l10_Fmax_range = log10(Fmax_range),
+        l10_N0_range = log10(N0_range),
+        h_range = h_range,
         tsteps = tsteps,
         lhs_iter = lhs_iter_val,
         MC = T,
@@ -137,9 +143,9 @@ fr_fit <- function(
     fit[[witer]] <- bbmle::mle2(
       minuslogl = fr_nll,
       start = list(
-        Fmax = start_parms$Fmax[start_parms$nll == min(start_parms$nll)],
-        N0 = start_parms$N0[start_parms$nll == min(start_parms$nll)],
-        q = start_parms$q[start_parms$nll == min(start_parms$nll)]
+        l10_Fmax = start_parms$l10_Fmax[start_parms$nll == min(start_parms$nll)],
+        l10_N0 = start_parms$l10_N0[start_parms$nll == min(start_parms$nll)],
+        h = start_parms$h[start_parms$nll == min(start_parms$nll)]
       ),
       fixed = list(
         tsteps = tsteps
@@ -154,8 +160,8 @@ fr_fit <- function(
     )
     nll_fits[witer] <- round(bbmle::logLik(fit[[witer]])[][1], val_tol)
     message(paste("parameter values after fit ", witer, ":", sep = ""))
-    message(paste("Fmax: ", round(bbmle::coef(fit[[witer]])[1],3)))
-    message(paste("N0: ", round(bbmle::coef(fit[[witer]])[2],3)))
+    message(paste("Fmax: ", round(10^bbmle::coef(fit[[witer]])[1],3)))
+    message(paste("N0: ", round(10^bbmle::coef(fit[[witer]])[2],3)))
     message(paste("q: ", round(bbmle::coef(fit[[witer]])[3],3)))
     message(paste("nll: ", nll_fits[witer]))
     message("#########################################")
