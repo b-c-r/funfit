@@ -11,3 +11,15 @@ dfr_vp <- data.frame(Nstart = dfr_vp$N0,
                      Neaten = dfr_vp$Neaten)
 
 save(dfr_vp, file = "data/dfr_vp.RData")
+
+# converting the data from Sentis et al. (TBA) from a csv-file to
+# an RData-file to store it in the package. Data source:
+# TBA
+
+dfr_s <- read.csv("data_raw/data_sentis.csv")
+str(dfr_s)
+
+dfr_s <- data.frame(Nstart = dfr_s$Daphnia_density,
+                    Neaten = dfr_s$Daphnia_eaten)
+
+save(dfr_s, file = "data/dfr_s.RData")
