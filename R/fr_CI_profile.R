@@ -22,7 +22,7 @@
 #'   tend = rep(1, length(dfr_vp$Neaten))
 #' )
 #'
-#' CI <- fr_confint(fit = fit)
+#' CI <- fr_CI_profile(fit = fit)
 #' CI
 #'
 
