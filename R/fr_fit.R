@@ -122,7 +122,7 @@ fr_fit <- function(
                       bbmle::coef(fit[[1]])[1]*range_mult[i])
       N0_range <- c(10^bbmle::coef(fit[[1]])[2]/range_mult[i],
                       bbmle::coef(fit[[1]])[2]*range_mult[i])
-      q_range <- c(bbmle::coef(fit[[1]])[3]/range_mult[i],
+      h_range <- c(bbmle::coef(fit[[1]])[3]/range_mult[i],
                       bbmle::coef(fit[[1]])[3]*range_mult[i])
 
       lhs_parms(
