@@ -33,7 +33,7 @@ fr_nll <- function(Neaten,
                    h,
                    tsteps = 50){
 
-  if(h<=1) tsteps <- tsteps*10
+  if(h < 1) return(Inf)
 
   y <- fr_sim(Nstart = Nstart,
               P = P,
@@ -49,8 +49,6 @@ fr_nll <- function(Neaten,
                 log = T)
 
   nll <- -1*sum(lls)
-
-  if(h < 1) nll <- nll + 1000*(1-h)^2
 
   return(nll)
 }
