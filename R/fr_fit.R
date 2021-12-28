@@ -125,6 +125,8 @@ fr_fit <- function(
       h_range <- c(bbmle::coef(fit[[1]])[3]/range_mult[i],
                       bbmle::coef(fit[[1]])[3]*range_mult[i])
 
+      h_range[h_range<1] <- 1
+
       lhs_parms(
         Neaten = Neaten,
         Nstart = Nstart,
