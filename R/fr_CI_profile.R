@@ -27,8 +27,9 @@
 #'
 
 fr_CI_profile <- function(fit,
-                       MC = T,
-                       noC = 3
+                          CI_level = .95,
+                          MC = T,
+                          noC = 3
 ){
 
   parms <- c('l10_Fmax','l10_N0','h')
@@ -41,9 +42,15 @@ fr_CI_profile <- function(fit,
   ) %dopar% {
     bbmle::confint(object = fit,
                    parm = parms[i],
+                   level = CI_level,
                    method = 'uniroot')
   }
   parallel::stopCluster(cl)
+
+  if(is.na(ci[3])) ci[3] <- 1
+
+  rownames(ci) <- c('l10_Fmax','l10_N0','h')
+
   return(ci)
 }
 

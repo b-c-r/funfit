@@ -4,7 +4,7 @@
 \alias{fr_CI_profile}
 \title{Profiling the confidence intervalls in parallel}
 \usage{
-fr_CI_profile(fit, MC = T, noC = 3)
+fr_CI_profile(fit, CI_level = 0.95, MC = T, noC = 3)
 }
 \arguments{
 \item{fit}{The prey/resource items eaten throughout the experimental
