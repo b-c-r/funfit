@@ -4,7 +4,18 @@
 \alias{fr_nll}
 \title{Calculation of negative log-likelihoods using lsoda() as method}
 \usage{
-fr_nll(Neaten, Nstart, P, tend, l10_Fmax, l10_N0, h, tsteps = 50)
+fr_nll(
+  Neaten,
+  Nstart,
+  P,
+  tend,
+  l10_Fmax,
+  l10_N0,
+  h,
+  penalty = 10000,
+  h_low = 1,
+  tsteps = 50
+)
 }
 \arguments{
 \item{Neaten}{The prey/resource items eaten throughout the experimental

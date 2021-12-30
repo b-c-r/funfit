@@ -31,9 +31,11 @@ fr_nll <- function(Neaten,
                    l10_Fmax,
                    l10_N0,
                    h,
+                   penalty = 10000,
+                   h_low = 1,
                    tsteps = 50){
 
-  if(h < 1) return(Inf)
+
 
   y <- fr_sim(Nstart = Nstart,
               P = P,
@@ -50,8 +52,8 @@ fr_nll <- function(Neaten,
 
   nll <- -1*sum(lls)
 
+  if(h < 1) nll <- nll + penalty*(h-h_low)^2
+
   return(nll)
 }
-
-
 
