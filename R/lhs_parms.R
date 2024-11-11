@@ -29,24 +29,43 @@
 #'
 
 lhs_parms <- function(
-  Neaten,
-  Nstart,
-  P,
-  tend,
-  l10_Fmax_range,
-  l10_N0_range,
-  h_range,
-  tsteps = 100,
-  lhs_iter = 1000,
-  MC = T,
-  noC = ceiling(parallel::detectCores()/2)
+    fr_type = "gen",
+    Neaten,
+    Nstart,
+    P,
+    tend,
+    l10_Fmax_range,
+    l10_N0_range,
+    h_range,
+    tsteps = 100,
+    lhs_iter = 1000,
+    MC = T,
+    noC = ceiling(parallel::detectCores()/2)
 ){
   ## guessing parameter ranges:
-  lhsvals <- lhs::randomLHS(lhs_iter, 3)
+  if(fr_type == "gen"){
+    lhsvals <- lhs::randomLHS(lhs_iter, 3)
+  } else{
+    lhsvals <- lhs::randomLHS(lhs_iter, 2)
+  }
+
 
   l10_Fmax_range <- (lhsvals[,1] * (l10_Fmax_range[2]-l10_Fmax_range[1])) + l10_Fmax_range[1]
   l10_N0_range <- (lhsvals[,2] * (l10_N0_range[2]-l10_N0_range[1])) + l10_N0_range[1]
-  h_range <- (lhsvals[,3] * (h_range[2]-h_range[1])) + h_range[1]
+  if(fr_type == "gen"){
+    h_range <- (lhsvals[,3] * (h_range[2]-h_range[1])) + h_range[1]
+  } else{
+    if(fr_type == "II"){
+      h_range <- rep(1, length(lhsvals[,2]))
+    } else{
+      if(fr_type == "III"){
+        h_range <- rep(2, length(lhsvals[,2]))
+      } else{
+        stop("Error: provide a valid functional response type. It must be one of the following: II, III, gen")
+      }
+    }
+  }
+
 
   ## calculate nlls
   if(MC == T){

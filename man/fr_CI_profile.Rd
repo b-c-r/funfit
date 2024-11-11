@@ -18,7 +18,7 @@ trial.}
 Returns the profiled confidence intervals.
 }
 \description{
-
+Profiling the confidence intervalls in parallel
 }
 \examples{
 

@@ -2,6 +2,7 @@
 % Please edit documentation in R/zzz.R
 \docType{package}
 \name{funfit}
+\alias{funfit-package}
 \alias{funfit}
 \title{funfit}
 \description{

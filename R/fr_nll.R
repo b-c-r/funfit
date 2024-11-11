@@ -31,11 +31,10 @@ fr_nll <- function(Neaten,
                    l10_Fmax,
                    l10_N0,
                    h,
-                   penalty = 10000,
+                   penalty = 100,
                    h_low = 1,
-                   tsteps = 50){
-
-
+                   h_up = 5,
+                   tsteps = 100){
 
   y <- fr_sim(Nstart = Nstart,
               P = P,
@@ -52,7 +51,15 @@ fr_nll <- function(Neaten,
 
   nll <- -1*sum(lls)
 
-  if(h < 1) nll <- nll + penalty*(h-h_low)^2
+  if(h < h_low){
+    nll <- nll + penalty*(h-h_low)^2
+  } else{
+    if(h >= h_up){
+      nll <- nll + penalty*(h-h_up)^2
+    } else{
+      nll <- nll
+    }
+  }
 
   return(nll)
 }

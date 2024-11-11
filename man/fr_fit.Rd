@@ -5,6 +5,7 @@
 \title{Fitting of the functional response model with simulation by lsoda()}
 \usage{
 fr_fit(
+  fr_type = "gen",
   Nstart,
   Neaten,
   P,
@@ -55,7 +56,7 @@ should be multiplied for the validation random latin hypercube sampling.}
 TBA
 }
 \description{
-
+Fitting of the functional response model with simulation by lsoda()
 }
 \details{
 TBA

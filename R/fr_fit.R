@@ -42,6 +42,7 @@
 #'
 
 fr_fit <- function(
+  fr_type = "gen",
   Nstart,
   Neaten,
   P,
@@ -59,9 +60,22 @@ fr_fit <- function(
 
   Fmax_range <- c(min(Neaten[Nstart>(max(Nstart)/2)]), max(Neaten)*2) / mean(tend)
   N0_range <- quantile(Nstart,c(.1,.9))
-  h_range <- c(1, 4)
+  if(fr_type == "gen"){
+    h_range <- c(1, 4)
+  } else{
+    if(fr_type == "II"){
+      h_range <- c(1, 1)
+    } else{
+      if(fr_type == "III"){
+        h_range <- c(2, 2)
+      } else{
+        stop("Error: provide a valid functional response type. It must be one of the following: II, III, gen")
+      }
+    }
+  }
 
   start_parms <- lhs_parms(
+    fr_type = fr_type,
     Neaten = Neaten,
     Nstart = Nstart,
     P = P,
@@ -77,35 +91,56 @@ fr_fit <- function(
   message("parameter values after lhs-sampling:")
   message(paste("Fmax: ", round(10^start_parms$l10_Fmax,3)))
   message(paste("N0: ", round(10^start_parms$l10_N0,3)))
-  message(paste("h: ", round(start_parms$h,3)))
+  if(fr_type == "gen") message(paste("h: ", round(start_parms$h,3)))
   message("#########################################")
 
   fit <- list()
   nll_fits <- c()
 
-  fit[[1]] <- bbmle::mle2(
-    minuslogl = fr_nll,
-    start = list(
-      l10_Fmax = start_parms$l10_Fmax,
-      l10_N0 = start_parms$l10_N0,
-      h = start_parms$h
-    ),
-    fixed = list(
-      tsteps = tsteps
-    ),
-    data = list(
-      Nstart = Nstart,
-      Neaten = Neaten,
-      tend = tend,
-      P = P
-    ),
-    control = list(reltol = mle2_tol)
-  )
+  if(fr_type == "gen"){
+    fit[[1]] <- bbmle::mle2(
+      minuslogl = fr_nll,
+      start = list(
+        l10_Fmax = start_parms$l10_Fmax,
+        l10_N0 = start_parms$l10_N0,
+        h = start_parms$h
+      ),
+      fixed = list(
+        tsteps = tsteps
+      ),
+      data = list(
+        Nstart = Nstart,
+        Neaten = Neaten,
+        tend = tend,
+        P = P
+      ),
+      control = list(reltol = mle2_tol)
+    )
+  } else{
+    fit[[1]] <- bbmle::mle2(
+      minuslogl = fr_nll,
+      start = list(
+        l10_Fmax = start_parms$l10_Fmax,
+        l10_N0 = start_parms$l10_N0
+      ),
+      fixed = list(
+        h = start_parms$h,
+        tsteps = tsteps
+      ),
+      data = list(
+        Nstart = Nstart,
+        Neaten = Neaten,
+        tend = tend,
+        P = P
+      ),
+      control = list(reltol = mle2_tol)
+    )
+  }
   nll_fits[1] <- round(bbmle::logLik(fit[[1]])[][1], val_tol)
   message(paste("parameter values after fit 1:", sep = ""))
   message(paste("Fmax: ", round(10^bbmle::coef(fit[[1]])[1],3)))
   message(paste("N0: ", round(10^bbmle::coef(fit[[1]])[2],3)))
-  message(paste("q: ", round(bbmle::coef(fit[[1]])[3],3)))
+  if(fr_type == "gen") message(paste("h: ", round(bbmle::coef(fit[[1]])[3],3)))
   message(paste("nll: ", nll_fits[1]))
   message("#########################################")
   message("")
@@ -122,12 +157,27 @@ fr_fit <- function(
                       bbmle::coef(fit[[1]])[1]*range_mult[i])
       N0_range <- c(10^bbmle::coef(fit[[1]])[2]/range_mult[i],
                       bbmle::coef(fit[[1]])[2]*range_mult[i])
-      h_range <- c(bbmle::coef(fit[[1]])[3]/range_mult[i],
-                      bbmle::coef(fit[[1]])[3]*range_mult[i])
-
-      h_range[h_range<1] <- 1
+      if(fr_type == "gen"){
+        h_range <- c(bbmle::coef(fit[[1]])[3]/range_mult[i],
+                     bbmle::coef(fit[[1]])[3]*range_mult[i])
+      } else{
+        if(fr_type == "II"){
+          h_range <- c(1, 1)
+        } else{
+          if(fr_type == "III"){
+            h_range <- c(2, 2)
+          } else{
+            stop("Error: provide a valid functional response type. It must be one of the following: II, III, gen")
+          }
+        }
+      }
+      message(paste("Fmax_range: ", Fmax_range[1], " to ", Fmax_range[2]))
+      message(paste("N0_range: ", N0_range[1], " to ", N0_range[2]))
+      message(paste("h_range: ", h_range[1], " to ", h_range[2]))
+      h_range[h_range < .8] <- .8
 
       lhs_parms(
+        fr_type = fr_type,
         Neaten = Neaten,
         Nstart = Nstart,
         P = P,
@@ -142,29 +192,53 @@ fr_fit <- function(
       )
     }
 
-    fit[[witer]] <- bbmle::mle2(
-      minuslogl = fr_nll,
-      start = list(
-        l10_Fmax = start_parms$l10_Fmax[start_parms$nll == min(start_parms$nll)],
-        l10_N0 = start_parms$l10_N0[start_parms$nll == min(start_parms$nll)],
-        h = start_parms$h[start_parms$nll == min(start_parms$nll)]
-      ),
-      fixed = list(
-        tsteps = tsteps
-      ),
-      data = list(
-        Nstart = Nstart,
-        Neaten = Neaten,
-        tend = tend,
-        P = P
-      ),
-      control = list(reltol = mle2_tol)
-    )
+    message(start_parms)
+
+    if(fr_type == "gen"){
+      fit[[witer]] <- bbmle::mle2(
+        minuslogl = fr_nll,
+        start = list(
+          l10_Fmax = start_parms$l10_Fmax[start_parms$nll == min(start_parms$nll)],
+          l10_N0 = start_parms$l10_N0[start_parms$nll == min(start_parms$nll)],
+          h = start_parms$h[start_parms$nll == min(start_parms$nll)]
+        ),
+        fixed = list(
+          tsteps = tsteps
+        ),
+        data = list(
+          Nstart = Nstart,
+          Neaten = Neaten,
+          tend = tend,
+          P = P
+        ),
+        control = list(reltol = mle2_tol)
+      )
+    } else{
+      fit[[witer]] <- bbmle::mle2(
+        minuslogl = fr_nll,
+        start = list(
+          l10_Fmax = start_parms$l10_Fmax[start_parms$nll == min(start_parms$nll)],
+          l10_N0 = start_parms$l10_N0[start_parms$nll == min(start_parms$nll)]
+        ),
+        fixed = list(
+          h = start_parms$h[start_parms$nll == min(start_parms$nll)],
+          tsteps = tsteps
+        ),
+        data = list(
+          Nstart = Nstart,
+          Neaten = Neaten,
+          tend = tend,
+          P = P
+        ),
+        control = list(reltol = mle2_tol)
+      )
+    }
+
     nll_fits[witer] <- round(bbmle::logLik(fit[[witer]])[][1], val_tol)
     message(paste("parameter values after fit ", witer, ":", sep = ""))
     message(paste("Fmax: ", round(10^bbmle::coef(fit[[witer]])[1],3)))
     message(paste("N0: ", round(10^bbmle::coef(fit[[witer]])[2],3)))
-    message(paste("q: ", round(bbmle::coef(fit[[witer]])[3],3)))
+    if(fr_type == "gen") message(paste("h: ", round(bbmle::coef(fit[[witer]])[3],3)))
     message(paste("nll: ", nll_fits[witer]))
     message("#########################################")
     message("")

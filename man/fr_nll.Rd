@@ -12,9 +12,10 @@ fr_nll(
   l10_Fmax,
   l10_N0,
   h,
-  penalty = 10000,
+  penalty = 100,
   h_low = 1,
-  tsteps = 50
+  h_up = 5,
+  tsteps = 100
 )
 }
 \arguments{
@@ -41,7 +42,7 @@ Must be a vector of the length of Nstart.}
 Returns a single negative log-likelihood value.
 }
 \description{
-
+Calculation of negative log-likelihoods using lsoda() as method
 }
 \examples{
 

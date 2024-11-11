@@ -5,6 +5,7 @@
 \title{Random Sampling of Parameters and Selection based on lhs}
 \usage{
 lhs_parms(
+  fr_type = "gen",
   Neaten,
   Nstart,
   P,
