@@ -1,4 +1,4 @@
-# funfit
+# funfit: fit numerically simulated functional responses to data
 
 **This package is under development. Try it carefully! (And share suggestions ;-))**
 
